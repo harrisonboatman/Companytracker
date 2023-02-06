@@ -53,7 +53,7 @@ const mainMenu = () => {
             } else if (choices == 'End Application') {
                 connect.end()
             }
-            
+
 
         }
         )
@@ -242,27 +242,68 @@ const addEmp = () => {
 
 const updateEmp = () => {
     let empArr = [];
+    let empNum = [];
     let roleArr = [];
-    connect.query('Select CONCAT(first_name, " ", last_name) as full_name from employee', (err, data)=> {
-        data.forEach((item)=> {
-            empArr.push(item.full_name)
+    let roleNum = [];
+    connect.query('Select id, CONCAT(first_name, " ", last_name) as full_name from employee', (err, data) => {
+        data.forEach((item) => {
+            empArr.push(item.full_name);
+            empNum.push(item.id)
+            // console.log(empNum)
             // console.log(empArr)
         })
     })
+    connect.query('SELECT * FROM roles', (err, roledata) => {
+        roledata.forEach((item) => {
+            roleArr.push(item.title);
+            roleNum.push(item.id)
 
+
+        })
+    }
+    )
 
     inquirer.prompt([{
+        type: 'input',
+        name: 'x',
+        message: 'Hit ENTER to continue',
+
+    },
+    {
         type: 'list',
         name: 'emp',
         message: 'Which employee would you like to update the role of?',
         choices: empArr
     },
-{
-    type: 'list',
-    name : 'job',
-    message: 'What would you like this employees new role to be?',
-    choices: jobArr
-}])
+    {
+        type: 'list',
+        name: 'job',
+        message: 'What would you like this employees new role to be?',
+        choices: roleArr
+    }])
+
+        .then((answers) => {
+            for (let i = 0; i < empArr.length; i++) {
+                if (empArr[i] == answers.emp) {
+                    answers.emp = empNum[i]
+                }
+            }
+            for (let i = 0; i < roleArr.length; i++) {
+                if (roleArr[i] == answers.job) {
+                    answers.job = roleNum[i]
+                }
+            }
+
+            let sql = (`UPDATE employee SET role_id = '${answers.job}' WHERE id = '${answers.emp}'`)
+
+            connect.query(sql, (err, data) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    mainMenu();
+                }
+            })
+        })
 
 }
 
