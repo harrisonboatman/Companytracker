@@ -88,7 +88,7 @@ const viewRole = () => {
 
 const viewEmp = () => {
     console.log("You are now viewing all employess");
-    let sql = ('SELECT a.id, a.first_name, a.last_name, roles.title as "job", CONCAT(b.first_name, " ", b.last_name) as "Manager" FROM employee as a JOIN roles ON a.role_id = roles.id JOIN department on roles.department_id = department.id LEFT OUTER JOIN employee AS b on a.manager_id = b.id');
+    let sql = ('SELECT a.id, a.first_name, a.last_name, roles.title as "job", department.dept_name as "Department", roles.salary as "Salary", CONCAT(b.first_name, " ", b.last_name) as "Manager" FROM employee as a JOIN roles ON a.role_id = roles.id JOIN department on roles.department_id = department.id LEFT OUTER JOIN employee AS b on a.manager_id = b.id');
 
     connect.query(sql, (err, data) => {
         if (err) {
