@@ -82,7 +82,7 @@ viewDepart = () => {
 
 viewRole = () => {
     console.log('You are now viewing all the roles');
-    let sql = ('SELECT roles.title AS roles FROM roles');
+    let sql = ('SELECT * FROM roles');
     connect.query(sql, (err, data) => {
         if (err) {
             console.log(err);
@@ -108,6 +108,15 @@ viewEmp = () => {
 };
 
 addRole = () => {
+    let deptArr = []
+    
+    connect.query('SELECT * FROM department', (err, data) => {
+        data.forEach((item) => {deptArr.push(item.dept_name)})
+        // deptArr.push(data[0])
+        
+        
+    })
+
     inquirer.prompt([
         {type: 'input',
         name: 'title',
@@ -119,12 +128,20 @@ addRole = () => {
     message: 'What would you like the Salary to be?'
 },
 {
-    type: 'input',
+    type: 'list',
     name: 'deptid',
-  message: 'What department would this job be under'
+  message: 'What department would this job be under',
+  choices: deptArr
 }]
     )
 .then((answers) => {
+    if (answers.deptid == "Sales") {
+        answers.deptid = 1
+    } else if (answers.deptid == "Engineering") {
+        answers.deptid = 2
+    } else if (answers.deptid == "Finance") {
+        answers.deptid = 3
+    }
     let sql = (`INSERT INTO roles (title, salary, department_id) VALUES ("${answers.title}", ${answers.salary}, ${answers.deptid})`);
 
     connect.query(sql, (err, data) => {
@@ -142,8 +159,38 @@ addRole = () => {
 
 addDept = () => {
     inquirer.prompt([{
-        type:'input'
+        type:'input',
+        name: 'deptname',
+        message: 'What department would you like to add to the database?',
     }])
+    .then((answers) => {
+        let sql = (`INSERT INTO department (dept_name) VALUES ("${answers.deptname}")`);
+
+        connect.query(sql, (err, data) => {
+            if (err) {
+                console.log(err);
+            } else {
+                mainMenu();
+            }
+        })
+    })
+};
+
+addEmp = () => {
+    inquirer.prompt([{
+        type: 'input',
+        name: 'fname',
+        message: 'What is the employees first name?'
+    },
+{
+    type: 'input',
+    name: 'lname',
+    message: 'What is the employees last name?'
+},
+{
+    type: 'input',
+    name: 'roleid',
+}])
 }
 
 mainMenu();
