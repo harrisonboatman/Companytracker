@@ -68,7 +68,7 @@ const mainMenu = () => {
 
 viewDepart = () => {
     console.log("You are now viewing all departments");
-    let sql = ('SELECT department.id AS DeptId, department.name as DeptName FROM department');
+    let sql = ('SELECT department.id AS DeptId, department.dept_name as DeptName FROM department');
 
     connect.query(sql, (err, data) => {
         if (err) {
@@ -82,7 +82,7 @@ viewDepart = () => {
 
 viewRole = () => {
     console.log('You are now viewing all the roles');
-    let sql = ('SELECT role.title AS roles FROM roles');
+    let sql = ('SELECT roles.title AS roles FROM roles');
     connect.query(sql, (err, data) => {
         if (err) {
             console.log(err);
@@ -95,7 +95,7 @@ viewRole = () => {
 
 viewEmp = () => {
     console.log("You are now viewing all employess");
-    let sql = ('SELECT * FROM employees');
+    let sql = ('SELECT * FROM employee');
 
     connect.query(sql, (err, data) => {
         if (err) {
@@ -107,3 +107,43 @@ viewEmp = () => {
     })
 };
 
+addRole = () => {
+    inquirer.prompt([
+        {type: 'input',
+        name: 'title',
+        message: 'What title for the new role would you like to add'
+},
+{
+    type: 'input',
+    name: 'salary',
+    message: 'What would you like the Salary to be?'
+},
+{
+    type: 'input',
+    name: 'deptid',
+  message: 'What department would this job be under'
+}]
+    )
+.then((answers) => {
+    let sql = (`INSERT INTO roles (title, salary, department_id) VALUES ("${answers.title}", ${answers.salary}, ${answers.deptid})`);
+
+    connect.query(sql, (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.table(data);
+            mainMenu();
+        }
+    })
+
+})
+
+};
+
+addDept = () => {
+    inquirer.prompt([{
+        type:'input'
+    }])
+}
+
+mainMenu();
