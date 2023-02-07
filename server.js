@@ -51,8 +51,12 @@ const mainMenu = () => {
             } else if (choices == 'View budget of all departments') {
                 viewBudget();
             } else if (choices == 'End Application') {
-                connect.end()
+                console.log("Goodbye!");
+                connect.end();
             }
+             
+
+
 
 
         }
@@ -247,10 +251,12 @@ const updateEmp = () => {
     let roleNum = [];
     connect.query('Select id, CONCAT(first_name, " ", last_name) as full_name from employee', (err, data) => {
         data.forEach((item) => {
+
             empArr.push(item.full_name);
             empNum.push(item.id)
             // console.log(empNum)
             // console.log(empArr)
+
         })
     })
     connect.query('SELECT * FROM roles', (err, roledata) => {
@@ -263,24 +269,25 @@ const updateEmp = () => {
     }
     )
 
-    inquirer.prompt([{
-        type: 'input',
-        name: 'x',
-        message: 'Hit ENTER to continue',
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'x',
+            message: 'Hit ENTER to continue',
 
-    },
-    {
-        type: 'list',
-        name: 'emp',
-        message: 'Which employee would you like to update the role of?',
-        choices: empArr
-    },
-    {
-        type: 'list',
-        name: 'job',
-        message: 'What would you like this employees new role to be?',
-        choices: roleArr
-    }])
+        },
+        {
+            type: 'list',
+            name: 'emp',
+            message: 'Which employee would you like to update the role of?',
+            choices: empArr
+        },
+        {
+            type: 'list',
+            name: 'job',
+            message: 'What would you like this employees new role to be?',
+            choices: roleArr
+        }])
 
         .then((answers) => {
             for (let i = 0; i < empArr.length; i++) {
@@ -305,6 +312,29 @@ const updateEmp = () => {
             })
         })
 
+};
+
+const viewBudget = async () => {
+
+
+    const budget = connect.query('SELECT department.dept_name as "Department", SUM(salary) as Budget FROM roles JOIN department ON roles.department_id = department.id GROUP BY department.dept_name', (err, roledata) => {
+        console.log("You are now viewing the budget for all the separate departments!")
+        console.table(roledata)
+
+
+    })
+
+    inquirer.prompt([{
+        type: 'input',
+        name: 'x',
+        message: 'Press enter to continue!'
+    }])
+        .then((answers) => {
+            mainMenu();
+        })
 }
+
+
+
 
 mainMenu();
